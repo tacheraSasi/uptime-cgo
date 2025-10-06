@@ -7,7 +7,7 @@ import "fmt"
 var print = fmt.Println
 
 func main(){
-	var uptime uint32 = C.getUptime()
+	uptime := C.get_uptime()
 	print("The system uptime is",uptime)
 
 }

@@ -1,1 +1,1 @@
-int getUptime();
+int get_uptime();
