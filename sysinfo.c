@@ -49,8 +49,34 @@ char* get_uptime_mac(){
     if (result == NULL) {
         return NULL;
     }
-    sprintf(result, "%d days, %d hours, %d minutes, %d seconds\n", days, hours, minutes, seconds);
-    return result;
+    char daysString[64];
+    if (days == 1) {
+        sprintf(daysString, "1 day");
+    } else {
+        sprintf(daysString, "%d days", days);
+    }
+
+    char hoursString[64];
+    if (hours == 1) {
+        sprintf(hoursString, "1 hour");
+    } else {
+        sprintf(hoursString, "%d hours", hours);
+    }
+    char minutesString[64];
+    if (minutes == 1) {
+        sprintf(minutesString, "1 minute");
+    } else {
+        sprintf(minutesString, "%d minutes", minutes);
+    }
+    char secondsString[64];
+    if (seconds == 1) {
+        sprintf(secondsString, "1 second");
+    } else {
+        sprintf(secondsString, "%d seconds", seconds);
+    }
+    char* uptime_str = malloc(256);
+    sprintf(uptime_str, "%s, %s, %s, %s\n", daysString, hoursString, minutesString, secondsString);
+    return uptime_str;
 }
 
 char* get_uptime_linux(){
