@@ -1,1 +1,1 @@
-int get_uptime();
+int get_uptime(char os[]);

@@ -2,12 +2,16 @@ package main
 
 // #include "sysinfo.h"
 import "C"
-import "fmt"
+import (
+	"fmt"
+	"runtime"
+)
 
 var print = fmt.Println
 
-func main(){
-	uptime := C.get_uptime()
-	print("The system uptime is",uptime)
+func main() {
+	os := runtime.GOOS
+	uptime := C.get_uptime(os)
+	print("The system uptime is", uptime)
 
 }

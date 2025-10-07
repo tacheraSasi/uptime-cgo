@@ -57,12 +57,12 @@ int get_uptime_linux(){
         return -1;
     }
     long uptime = info.uptime;
-   12     int days = uptime / (24 * 3600);
-   13     uptime %= (24 * 3600);
-   14     int hours = uptime / 3600;
-   15     uptime %= 3600;
-   16     int minutes = uptime / 60;
-   17     int seconds = uptime % 60;
+   int days = uptime / (24 * 3600);
+   uptime %= (24 * 3600);
+   int hours = uptime / 3600;
+   uptime %= 3600;
+   int minutes = uptime / 60;
+   int seconds = uptime % 60;
 
     return sprintf("%d days, %d hours, %d minutes, %d seconds\n", days, hours, minutes, seconds);
 }
