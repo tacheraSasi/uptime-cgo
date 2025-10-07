@@ -1,28 +1,26 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <sys/time.h>
 #include <sys/sysctl.h>
 #ifdef __linux__
 #include <sys/sysinfo.h>
 #endif
+#include "sysinfo.h"
 
-
-int get_uptime(char os[]){
-    const osType = os;
-    switch (osType){
-    case 'MAC':
+char* get_uptime(char os[]){
+    if (strcmp(os, "MAC") == 0) {
         return get_uptime_mac();
-        break;
-    case 'LINUX':
+    } else if (strcmp(os, "LINUX") == 0) {
         return get_uptime_linux();
-        break;
-    default:
-        printf("Unsupported OS: %s\n", osType);
-        return 0;
-        break;
+    } else {
+        printf("Unsupported OS: %s\n", os);
+        return NULL;
     }
-    return 0;
 }
 
-int get_uptime_mac(){
+char* get_uptime_mac(){
     int mib[2];
     struct timeval boottime;
     size_t size = sizeof(boottime);
@@ -34,7 +32,7 @@ int get_uptime_mac(){
 
     if (sysctl(mib, 2, &boottime, &size, NULL, 0) != 0) {
         perror("sysctl");
-        return -1;
+        return NULL;
     }
 
     time(&now);
@@ -47,22 +45,36 @@ int get_uptime_mac(){
     int minutes = uptime / 60;
     int seconds = uptime % 60;
 
-    return sprintf("%d days, %d hours, %d minutes, %d seconds\n", days, hours, minutes, seconds);
+    char* result = malloc(256);
+    if (result == NULL) {
+        return NULL;
+    }
+    sprintf(result, "%d days, %d hours, %d minutes, %d seconds\n", days, hours, minutes, seconds);
+    return result;
 }
 
-int get_uptime_linux(){
+char* get_uptime_linux(){
+#ifdef __linux__
     struct sysinfo info;
     if (sysinfo(&info) != 0) {
         perror("sysinfo");
-        return -1;
+        return NULL;
     }
     long uptime = info.uptime;
-   int days = uptime / (24 * 3600);
-   uptime %= (24 * 3600);
-   int hours = uptime / 3600;
-   uptime %= 3600;
-   int minutes = uptime / 60;
-   int seconds = uptime % 60;
+    int days = uptime / (24 * 3600);
+    uptime %= (24 * 3600);
+    int hours = uptime / 3600;
+    uptime %= 3600;
+    int minutes = uptime / 60;
+    int seconds = uptime % 60;
 
-    return sprintf("%d days, %d hours, %d minutes, %d seconds\n", days, hours, minutes, seconds);
+    char* result = malloc(256);
+    if (result == NULL) {
+        return NULL;
+    }
+    sprintf(result, "%d days, %d hours, %d minutes, %d seconds\n", days, hours, minutes, seconds);
+    return result;
+#else
+    return "Linux sysinfo not supported on this platform";
+#endif
 }
