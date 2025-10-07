@@ -16,7 +16,6 @@ func main() {
 	goos := runtime.GOOS
 	var osName string
 
-	// Map Go OS names to C function expected names
 	switch goos {
 	case "darwin":
 		osName = "MAC"
