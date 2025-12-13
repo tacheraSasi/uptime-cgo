@@ -68,8 +68,8 @@ uptime_struct get_uptime_linux() {
 #endif
 }
 
-// Returns uptime struct based on OS
-uptime_struct get_uptime(const char *os) {
+/* Return uptime as a struct based on OS string */
+uptime_struct get_uptime_struct(const char *os) {
     if (strcmp(os, "MAC") == 0) {
         return get_uptime_mac();
     } else if (strcmp(os, "LINUX") == 0) {
@@ -80,8 +80,48 @@ uptime_struct get_uptime(const char *os) {
     }
 }
 
-// Helper function to convert uptime_struct to string
+/* Helper function to convert uptime_struct to string in a buffer */
 void uptime_to_string(uptime_struct uptime, char *buffer, size_t size) {
     snprintf(buffer, size, "%d days, %d hours, %d minutes, %d seconds",
              uptime.days, uptime.hours, uptime.minutes, uptime.seconds);
+}
+
+/* Internal helper: allocate a C string with the plain textual uptime */
+static char* uptime_struct_to_cstring(uptime_struct uptime) {
+    char tmp[128];
+    uptime_to_string(uptime, tmp, sizeof(tmp));
+    size_t len = strlen(tmp) + 1;
+    char *out = (char *)malloc(len);
+    if (out) {
+        memcpy(out, tmp, len);
+    }
+    return out;
+}
+
+/* Internal helper: allocate a C string containing JSON */
+static char* uptime_struct_to_json(uptime_struct uptime) {
+    /* Small fixed-size buffer is sufficient for these integers */
+    char tmp[128];
+    int n = snprintf(tmp, sizeof(tmp),
+                     "{\"days\":%d,\"hours\":%d,\"minutes\":%d,\"seconds\":%d}",
+                     uptime.days, uptime.hours, uptime.minutes, uptime.seconds);
+    if (n < 0) return NULL;
+    size_t len = (size_t)n + 1;
+    char *out = (char *)malloc(len);
+    if (out) {
+        memcpy(out, tmp, len);
+    }
+    return out;
+}
+
+/* C-exported function used by Go: returns malloc'd string */
+char* get_uptime(const char *os) {
+    uptime_struct u = get_uptime_struct(os);
+    return uptime_struct_to_cstring(u);
+}
+
+/* C-exported function used by Go: returns malloc'd JSON string */
+char* get_uptime_json(const char *os) {
+    uptime_struct u = get_uptime_struct(os);
+    return uptime_struct_to_json(u);
 }
