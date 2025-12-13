@@ -4,6 +4,7 @@ package main
 // #include <stdlib.h>
 import "C"
 import (
+	"flag"
 	"fmt"
 	"runtime"
 	"strings"
@@ -14,6 +15,8 @@ var print = fmt.Println
 
 func main() {
 	goos := runtime.GOOS
+	json := flag.Bool("json", false, "print the output in json format")
+	flag.Parse()
 	var osName string
 
 	switch goos {
