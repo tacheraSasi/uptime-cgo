@@ -2,4 +2,4 @@ run:
 	go run .
 
 build:
-	go build -o uptime-cgo && sudo movebin uptime-cgo
+	go build -o xuptime && sudo movebin xuptime
