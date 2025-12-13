@@ -11,7 +11,6 @@ import (
 	"unsafe"
 )
 
-// prints stuff
 var print = fmt.Println
 
 func main() {
@@ -33,11 +32,17 @@ func main() {
 	cOsName := C.CString(osName)
 	defer C.free(unsafe.Pointer(cOsName))
 
-	uptimePtr := C.get_uptime(cOsName)
+	var uptimePtr *C.char
+	if *json {
+		uptimePtr = C.get_uptime_json(cOsName)
+	} else {
+		uptimePtr = C.get_uptime(cOsName)
+	}
+
 	if uptimePtr != nil {
 		uptime := C.GoString(uptimePtr)
 		C.free(unsafe.Pointer(uptimePtr))
-		print("The system uptime is:", strings.TrimSpace(uptime))
+		print(strings.TrimSpace(uptime))
 	} else {
 		print("Failed to get uptime")
 	}
